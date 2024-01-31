@@ -2,11 +2,6 @@
 
 ;;; Code:
 
-;; tweak android behaviour
-(setq touch-screen-precision-scroll t
-   ;; touch-screen-display-keyboard t
-   browse-url-android-share t)
-
 ;;; User
 ;;;; User Credentials
 ;; User name and email
@@ -17,7 +12,7 @@
 ;; Define the home directories variables
 (defvar dc-android-home "/storage/emulated/0/")
 (defvar dc-gnu-linux-home "~/")
-(defvar dc-gnu-linux-home-extended "/home/ii/")
+(defvar dc-gnu-linux-home-extended "/home/danijelcamdzic/")
 
 ;; Set the home directory based on system type
 (setq dc-home-directory
@@ -27,9 +22,9 @@
        (t dc-gnu-linux-home)))
 
 ;; Set the user folders
-(setq dc-books-directory (concat dc-home-directory "org/books/"))
+(setq dc-books-directory (concat dc-home-directory "org/Books/"))
 (setq dc-notes-directory (concat dc-home-directory "org/"))
-(setq dc-documents-directory (concat dc-home-directory "org/docs"))
+(setq dc-documents-directory (concat dc-home-directory "org/Documents/"))
 
 ;;; Package Managers
 ;;;; Package
@@ -84,28 +79,6 @@
   :ensure t
   )
 
-(use-package modus-themes
-  :ensure t
-  :config)
-
-(use-package doom-themes
-  :ensure t
-  :config
-  ;; Global settings (defaults)
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-one t)
-
-  ;; Enable flashing mode-line on errors
-  (doom-themes-visual-bell-config)
-  ;; Enable custom neotree theme (all-the-icons must be installed!)
-  (doom-themes-neotree-config)
-  ;; or for treemacs users
-  (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
-  (doom-themes-treemacs-config)
-  ;; Corrects (and improves) org-mode's native fontification.
-  (doom-themes-org-config))
-
 ;; Set gruvbox-theme as the system theme
 (load-theme 'gruvbox-dark-hard t)
 
@@ -132,10 +105,10 @@
 (setq inhibit-startup-screen t)
 
 ;; Open org-agenda day view on startup (unless called with a file argument)
-;;(add-hook 'emacs-startup-hook
-        ;;  (lambda ()
-         ;;   (unless (> (length command-line-args) 1)
-         ;;     (dc/org-agenda-day-view))))
+;; (add-hook 'emacs-startup-hook
+;;           (lambda ()
+;;             (unless (> (length command-line-args) 1)
+;;               (dc/org-agenda-day-view))))
 
 ;;;; Files
 ;; Disable backup and lock files
@@ -319,7 +292,7 @@
 
   ;; Set the width of the inline images to be the actual size
   (setq org-image-actual-width t)
-  
+
   ;; Set path type to relative so it works on all platforms
   (setq org-link-file-path-type 'relative)
 
@@ -338,10 +311,9 @@
   (setq org-confirm-babel-evaluate nil)
 
   ;; Set the org-todo-keywords and their states
-(setq org-todo-keywords
-      '((sequence "TODO(t)" "PROJ(p)" "LOOP(r)" "STRT(s)" "WAIT(w@/!)" "HOLD(h)" "IDEA(i@/!)" "FIXME(f@/!)" "REVIEW(v!)" "NEXT(N)" "|" "DONE(d)" "KILL(k@)")
-        (sequence "[ ](T)" "[-](S)" "[?](W)" "|" "[X](D)")
-        (sequence "|" "OKAY(o)" "YES(y)" "NO(n)")))
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "DOING(i!)" "|" "DONE(d!)" "SKIP(s!)" "FAIL(f!)")))
+  )
 
 ;;;;; Functions - Datetime Insertion
 (defun dc/org-insert-current-date-time ()
@@ -701,11 +673,11 @@ org file on the year calendar."
   "Get the parent heading of ITEM, or if none, the file title or filename."
   (org-super-agenda--when-with-marker-buffer (org-super-agenda--get-marker item)
     (if (org-up-heading-safe)
-        (org-entry-get nil "ITEM") 
+        (org-entry-get nil "ITEM")
       (let ((keywords (org-collect-keywords '("TITLE"))))
         (if keywords
-            (car (cdr (assoc "TITLE" keywords))) 
-          (file-name-nondirectory (buffer-file-name))))))) 
+            (car (cdr (assoc "TITLE" keywords)))
+          (file-name-nondirectory (buffer-file-name)))))))
 
 (org-super-agenda--def-auto-group parent "their parent heading or file title/filename"
   :key-form (dc/org-super-agenda-get-todo-parent item))
@@ -726,9 +698,9 @@ org file on the year calendar."
   :ensure t
   :config
   ;; Set directories
-  (setq org-roam-directory(concat org-directory "org-roam2/"))
+  (setq org-roam-directory(concat org-directory "org-roam2/")
   (setq org-roam-dailies-directory (concat org-directory "org-roam2/"))
-  
+
   ;; Exclude gpg encrypted files from being processed by org-roam
   (setq org-roam-file-exclude-regexp "\\(\\.gpg\\)$")
 
@@ -937,14 +909,14 @@ Android port."
   (setq org-alert-interval 300
         org-alert-notify-cutoff 10
         org-alert-notify-after-event-cutoff 10)
-  
+
   ;; Setup notification title (if using 'custom)
   (setq org-alert-notification-title "Org Alert Reminder")
-  
+
   ;; Use non-greedy regular expression
   (setq org-alert-time-match-string
         "\\(?:SCHEDULED\\|DEADLINE\\):.*?<.*?\\([0-9]\\{2\\}:[0-9]\\{2\\}\\(?:-[0-9]\\{2\\}:[0-9]\\{2\\}\\)?\\).*")
-  
+
   ;; Enable org-alert
   (org-alert-enable)
   )
@@ -1058,16 +1030,16 @@ use filename."
   :config
   ;; Set attach directory
   (setq org-attach-id-dir (concat org-directory "data/"))
-  
+
   ;; Use relative directories
   (setq org-attach-dir-relative t)
-  
+
   ;; Store links in place where file is attached
   (setq org-attach-store-link-p 'attached)
-  
+
   ;; Use inheritance
   (setq org-attach-use-inheritance t)
-  
+
   ;; Remove default tag for attachments
   (setq org-attach-auto-tag nil)
   )
@@ -1080,7 +1052,7 @@ use filename."
   :config
   ;; Use attachments and not file links
   (setq org-download-method 'attach)
-  
+
   ;; Don't create folders based on heading levels
   (setq-default org-download-heading-lvl nil)
   )
@@ -1106,8 +1078,8 @@ use filename."
 ;;;; Org-noter
 ;;;;; Configuration
 (use-package org-noter
-  :ensure t  
-  :after org 
+  :ensure t
+  :after org
   :config
   ;; Set the location of the notes
   (setq org-noter-notes-search-path '(org-directory))
@@ -1169,7 +1141,7 @@ use filename."
   :config
   ;; Set default .emacs-bmk-bmenu-state.el file path
   (setq bmkp-bmenu-state-file (expand-file-name ".emacs-bmk-bmenu-state.el" user-emacs-directory))
-  
+
   ;; Set default .emacs-bmk-bmenu-commands.el file path
   (setq bmkp-bmenu-commands-file (expand-file-name ".emacs-bmk-bmenu-commands.el" user-emacs-directory))
   )
@@ -1277,20 +1249,20 @@ use filename."
 ;;; Authentication
 ;;;; Auth-source
 ;;;;; Configuration
-;;(use-package auth-source
- ;; :ensure t
- ;; :config
+(use-package auth-source
+  :ensure t
+  :config
   ;; Set auth-sources files
-;;  (setq auth-sources
-   ;;     (cl-loop for file in (directory-files (concat dc-documents-directory ".auth-sources/") t "\\.gpg$")
-             ;;    collect `(:source ,file)))
+  (setq auth-sources
+        (cl-loop for file in (directory-files (concat dc-documents-directory ".auth-sources/") t "\\.gpg$")
+                 collect `(:source ,file)))
 
   ;; Enable authinfo-mode for auth-source files
- ;; (add-to-list 'auto-mode-alist '("\\.authinfo.*\\.gpg\\'" . authinfo-mode))
+  (add-to-list 'auto-mode-alist '("\\.authinfo.*\\.gpg\\'" . authinfo-mode))
 
   ;; Clear cached passwords after buffers are switched
- ;; (add-hook 'buffer-list-update-hook 'auth-source-forget-all-cached)
-;;  )
+  (add-hook 'buffer-list-update-hook 'auth-source-forget-all-cached)
+  )
 
 ;;;;; Functions - TOTP
 (require 'bindat)
@@ -1392,8 +1364,10 @@ DIGITS is tre  number of pin digits and defaults to 6."
 ;;;; Gptel
 ;;;;; Configuration
 (use-package gptel
-  :quelpa (gptel :fetcher github :repo "akhil3417/gptel")
   :ensure t
+  :config
+  ;; Set API key to nil at the beginning
+  (setq gptel-api-key nil)
   )
 
 ;;;;; Functions - API key
@@ -1402,17 +1376,5 @@ DIGITS is tre  number of pin digits and defaults to 6."
   (interactive)
   (setq gptel-api-key
         (auth-source-pick-first-password :host "API:openai.com")))
-
-(load-file (concat dc-home-directory ".emacs.d/gptel/config.el"))
-(load-file (concat dc-home-directory ".emacs.d/gptel/autoload/gptel-extra-prompts.el"))
-(load-file (concat dc-home-directory ".emacs.d/gptel/autoload/gptel-extras.el"))
-(setq gptel-directives (+gptel-build-directives(concat dc-android-home "/.emacs.d/AIPIHKAL/system-prompts/")))
-
-(use-package dirvish
-  :ensure t
-  :config
-  (dirvish-override-dired-mode))
-  
-(setq use-short-answers t)
 
 ;;; init.el ends here
